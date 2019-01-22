@@ -88,21 +88,38 @@
 ### 推荐功能
 > 特征工程
 
-#### 提取知识图谱特征
+#### MKR
+由于推荐系统(RS)中的物品和知识图谱(KG)中的实体存在重合，因此可以采用多任务学习的框架，讲推荐系统和知识图谱视为两个分离但是相关的任务，进行 __交替学习__。
 
+推荐部分的输入是用户(user_feature)和物品(item_feature)的特征表示，点击率的预估值(predicted_probability)作为输出。知识图谱特征学习部分使用的是三元组的头节点(head)和关系(relation)作为输入，预测的尾节点(tail)作为输出。
 
-#### TransE
-使用词向量word2vec，对于给定的三元组$(h,r,t)$，需要学习到
-$$ \vec{v}_h + \vec{v}_r = \vec{v}_t $$
+推荐系统和知识图谱两者的纽带就是“交叉特征共享单元”(cross-feature-sharing unit)。该单元的目的是让两个模块交换信息，据说这样做是为了让两者获取更多的信息，弥补自身信息稀疏性。
 
-定义损失函数
-$$ loss = \sum_{(h,r,t)\in{S}} \sum_{(h',r',t')\in{S'_{(h,r,t)}}} [\gamma + d(h+r, t) - d(h'+r', t')]  $$
+由于该模型存在两个模块的交叉，所以训练的时候首先固定推荐系统模块，训练知识图谱的参数，然后固定知识图谱特征学习模块的参数，训练推荐系统的参数。
 
-其中S表示的是正确三元组集合，S'是错误三元组的集合。上式中$\gamma$是一个边际参数，让正确三元组和错误三元组的距离最大化。
+推荐系统的训练目的是预测用户点击率，相当于一个二分类问题，使用L2正则项。
+```Python
+# RS
+self.base_loss_rs = tf.reduce_mean(
+    tf.nn.sigmoid_cross_entropy_with_logits(labels=self.labels, logits=self.scores)
+)
+self.l2_loss_rs = tf.nn.l2_loss(self.user_embeddings) + tf.nn.l2_loss(self.item_embeddings)
+for var in self.vars_rs:
+    self.l2_loss_rs += tf.nn.l2_loss(var)
+self.loss_rs = self.base_loss_rs + self.l2_loss_rs * args.l2_weight
+```
 
-有一个问题，错误三元组的数量肯定比较多，那么怎么构建合适的错误三元组？
-
-$$ S'_{(h,r,t)} = \{(h',r,t) | h'\in{E}\} \Cup \{(h,r,t') | t'\in{E}\} $$
+知识图谱特征学习是让预测的tail向量和真实tail向量相近，即目标
+$$ \vec{v}_{head} + \vec{v}_{relation} = \vec{v}_{tail} $$
+因此首先计算预测的tail和真实tail的内积，经过sigmoid平滑后取相反数，最后加上l2正则项。
+```Python
+# KGE
+self.base_loss_kge = -self.scores_kge
+self.l2_loss_kge = tf.nn.l2_loss(self.head_embeddings) + tf.nn.l2_loss(self.tail_embeddings)
+for var in self.vars_kge:
+    self.l2_loss_kge += tf.nn.l2_loss(var)
+self.loss_kge = self.base_loss_kge + self.l2_loss_kge * args.l2_weight
+```
 
 实际上是通过随机选择实体替换头实体或者尾实体来构成错误的训练三元组。由于用户“正确列表”是确定的，并且“正确列表”的物品数量一般小于总物体数量，那么只要知道了“正确列表”，那么就可以从“总列表-正确列表”中随机寻找一些物品构成“错误列表”即可，让两列表的数量尽可能相等。
 
