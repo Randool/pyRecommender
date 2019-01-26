@@ -1,0 +1,1 @@
+python main.py --n_epochs 30 --dim 8

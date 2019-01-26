@@ -123,6 +123,9 @@ self.loss_kge = self.base_loss_kge + self.l2_loss_kge * args.l2_weight
 
 实际上是通过随机选择实体替换头实体或者尾实体来构成错误的训练三元组。由于用户“正确列表”是确定的，并且“正确列表”的物品数量一般小于总物体数量，那么只要知道了“正确列表”，那么就可以从“总列表-正确列表”中随机寻找一些物品构成“错误列表”即可，让两列表的数量尽可能相等。
 
+损失函数
+$$\text{loss}(x, class) = -\log\left(\frac{\exp(x[class])}{\sum_j \exp(x[j])}\right) = -x[class] + \log\left(\sum_j \exp(x[j])\right)$$
+
 ### 查询功能
 > Prolog语言推理
 
