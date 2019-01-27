@@ -92,7 +92,7 @@ class MKR(nn.Module):
         """
         with torch.set_grad_enabled(False):
             y_scores = self.forward("rs", inputs)
-            AUC = roc_auc_score(y_true, y_scores)
+            AUC = roc_auc_score(y_true.cpu(), y_scores.cpu())
             predicts = y_scores > 0.5
             accuracy = (predicts == y_true).float().mean()
         

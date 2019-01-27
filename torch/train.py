@@ -130,7 +130,7 @@ def train(args, data):
         )
         
     # Save model
-    wts_name = "../model/MKR_{:.4f}.pth".format(best_test_acc)
+    wts_name = "../model/MKR_{}_{:.4f}.pth".format(args.dataset, best_test_acc)
     torch.save(best_state_dict, wts_name)
     print("Saved model to {}".format(wts_name))
 
