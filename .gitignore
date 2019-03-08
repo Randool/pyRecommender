@@ -107,3 +107,4 @@ data/music/*
 !data/music/user_artists.dat
 !data/music/kg.txt
 data/news/*
+home-made-data/*
