@@ -1,1 +1,1 @@
-python main.py --n_epochs 30 --dim 8
+python main.py --dataset book --n_epochs 60 --dim 8

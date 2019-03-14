@@ -1,0 +1,1 @@
+python main.py --dataset book --n_epochs 5 --dim 8 --L 1 --H 1 --batch_size 32 --l2_weight 1e-6 --lr_rs 2e-4 --lr_kge 2e-5 --kge_interval 2

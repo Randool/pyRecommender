@@ -2,24 +2,27 @@ import os
 import numpy as np
 
 
+data_path = "../home-made-data/"
+
+
 def load_data(args):
     n_user, n_item, train_data, test_data = load_rating(args)
     n_entity, n_relation, kg = load_kg(args)
-    print('data loaded.')
+    print("data loaded.")
 
     return n_user, n_item, n_entity, n_relation, train_data, test_data, kg
 
 
 def load_rating(args):
-    print('reading rating file ...')
+    print("reading rating file ...")
 
     # reading rating file
-    rating_file = '../data/' + args.dataset + '/ratings_final'
-    if os.path.exists(rating_file + '.npy'):
-        rating_np = np.load(rating_file + '.npy')
+    rating_file = data_path + args.dataset + "/ratings_final"
+    if os.path.exists(rating_file + ".npy"):
+        rating_np = np.load(rating_file + ".npy")
     else:
-        rating_np = np.loadtxt(rating_file + '.txt', dtype=np.int32)
-        np.save(rating_file + '.npy', rating_np)
+        rating_np = np.loadtxt(rating_file + ".txt", dtype=np.int32)
+        np.save(rating_file + ".npy", rating_np)
 
     n_user = len(set(rating_np[:, 0]))
     n_item = len(set(rating_np[:, 1]))
@@ -29,13 +32,15 @@ def load_rating(args):
 
 
 def dataset_split(rating_np):
-    print('splitting dataset ...')
+    print("splitting dataset ...")
 
     # train:test = 8:2
     test_ratio = 0.2
     n_ratings = rating_np.shape[0]
 
-    test_indices = np.random.choice(list(range(n_ratings)), size=int(n_ratings * test_ratio), replace=False)
+    test_indices = np.random.choice(
+        list(range(n_ratings)), size=int(n_ratings * test_ratio), replace=False
+    )
     left = set(range(n_ratings)) - set(test_indices)
     train_indices = list(left - set(test_indices))
 
@@ -46,15 +51,15 @@ def dataset_split(rating_np):
 
 
 def load_kg(args):
-    print('reading KG file ...')
+    print("reading KG file ...")
 
     # reading kg file
-    kg_file = '../data/' + args.dataset + '/kg_final'
-    if os.path.exists(kg_file + '.npy'):
-        kg = np.load(kg_file + '.npy')
+    kg_file = data_path + args.dataset + "/kg_final"
+    if os.path.exists(kg_file + ".npy"):
+        kg = np.load(kg_file + ".npy")
     else:
-        kg = np.loadtxt(kg_file + '.txt', dtype=np.int32)
-        np.save(kg_file + '.npy', kg)
+        kg = np.loadtxt(kg_file + ".txt", dtype=np.int32)
+        np.save(kg_file + ".npy", kg)
 
     n_entity = len(set(kg[:, 0]) | set(kg[:, 2]))
     n_relation = len(set(kg[:, 1]))

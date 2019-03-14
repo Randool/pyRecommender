@@ -1,0 +1,1 @@
+python main.py --dataset music --n_epochs 30 --dim 4 --L 2 --H 1 --batch_size 256 -l2_weight 1e-6 --lr_rs 1e-3 --lr_kge 2e-4 --kge_interval 2

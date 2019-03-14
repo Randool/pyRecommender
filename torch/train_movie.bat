@@ -1,0 +1,1 @@
+python main.py --dataset movie --n_epochs 20 --dim 8 --L 1 --H 1 --batch_size 64 --l2_weight 1e-6 --lr_rs 0.02 --lr_kge 0.01 --kge_interval 3
