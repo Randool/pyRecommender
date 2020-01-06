@@ -2,6 +2,8 @@
 
 > 基于知识图谱的推荐系统
 
+参考了[Multi-Task Feature Learning for Knowledge Graph Enhanced Recommendation](https://arxiv.org/abs/1901.08907)，是该论文的PyTorch版实现，具体用法还请移步原作者的[git](https://github.com/hwwang55/MKR)
+
 ## TODO
 
 ### 基于知识图谱的推荐功能
